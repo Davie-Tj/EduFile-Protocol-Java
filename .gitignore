@@ -1,0 +1,8 @@
+bin/
+obj/
+*.exe
+*.o
+*.gch
+*.class
+*.project
+*.classpath
