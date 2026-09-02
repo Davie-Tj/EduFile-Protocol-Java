@@ -30,6 +30,7 @@ Designed to simulates a university document repository where students can **logi
 ---
 
 ## 📁 Project Structure
+```plaintext
 EduFile-Protocol-Java/
 ├── src/
 │ ├── tj/
@@ -49,7 +50,7 @@ EduFile-Protocol-Java/
 ├── docs/
 │ └── *.bat # Build/run scripts
 └── README.md
-
+```
 
 
 ---
