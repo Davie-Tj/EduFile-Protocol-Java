@@ -48,79 +48,80 @@ public class EduServerHandler implements Runnable{
 	@Override
 	public void run() {
 		System.out.println("handling Client Requests...");
-		
 		//receive and handle incoming requests
 		try {
-			String requestLine = br.readLine();
-			System.out.println(requestLine);
-			//break the request into tokens
-			StringTokenizer tokens = new StringTokenizer(requestLine);
-			//extract the request command
-			String command = tokens.nextToken();
-			
-			switch (command){
-			case "LOGIN":
-			{
-				//validate the user
-				String userName = tokens.nextToken();
-				String passWord = tokens.nextToken();
-				if(!authonticate(userName, passWord)) {
-					System.out.println("Invalid login details");
-					pw.println("INVALID_CREDENTIALS");
-					return;
-				}else {
-					System.out.println("Login succeful");
-					pw.println("SUCCESSFULLY_LOGED_IN");
-				}
-				break;
-			}
-			case "LIST":
-			{
-				ArrayList<String> docList = getDocList();
-				String list = returnList(docList);
-				pw.println(list);
-				break;
+			String requestLine = ""; 
+			while ((requestLine = br.readLine()) != null && !requestLine.isEmpty()) {
+				System.out.println(requestLine);
+				//break the request into tokens
+				StringTokenizer tokens = new StringTokenizer(requestLine);
+				//extract the request command
+				String command = tokens.nextToken();
 				
-			}
-			case "GET":
-			{	
-				//returning requested file to the client
-				String id = tokens.nextToken();
-				String fileName = idToFileNmae(id);
-				if(fileName != null) {
-					pw.println(fileName);
-					sendFile(fileName);
-					//send success message
-					pw.println("SUCCESS");
-					
-				}else {
-					System.out.println("Invalid ID: no document with ID " + id);
-					pw.println("INVALID_ID");
+				switch (command){
+				case "LOGIN":
+				{
+					//validate the user
+					String userName = tokens.nextToken();
+					String passWord = tokens.nextToken();
+					if(!authonticate(userName, passWord)) {
+						System.out.println("Invalid login details");
+						pw.println("INVALID_CREDENTIALS");
+						return;
+					}else {
+						System.out.println("Login succeful");
+						pw.println("SUCCESSFULLY_LOGED_IN");
+					}
+					break;
 				}
-				break;
-			}
-			case "UPLOAD":
-			{
-				//Receiving a file from client
-				String id = tokens.nextToken();
-				String fileName = tokens.nextToken();
-				long fileSize = Long.parseLong(tokens.nextToken());
-				//receive file 
-				receiveFile(fileName);
-				//update the document list
-				updateDocFile(id,fileName);
-				break;
-			}
-			case "LOGOUT":
-			{
-				logOut();
-				break;
-			}
-			default:
-			{
-				System.out.println("Invalid request Command: " + command);
-				break;
-			}
+				case "LIST":
+				{
+					ArrayList<String> docList = getDocList();
+					String list = returnList(docList);
+					pw.println(list);
+					break;
+					
+				}
+				case "GET":
+				{	
+					//returning requested file to the client
+					String id = tokens.nextToken();
+					String fileName = idToFileNmae(id);
+					if(fileName != null) {
+						pw.println(fileName);
+						sendFile(fileName);
+						//send success message
+						pw.println("SUCCESS");
+						
+					}else {
+						System.out.println("Invalid ID: no document with ID " + id);
+						pw.println("INVALID_ID");
+					}
+					break;
+				}
+				case "UPLOAD":
+				{
+					//Receiving a file from client
+					String id = tokens.nextToken();
+					String fileName = tokens.nextToken();
+					long fileSize = Long.parseLong(tokens.nextToken());
+					//receive file 
+					receiveFile(fileName);
+					//update the document list
+					updateDocFile(id,fileName);
+					break;
+				}
+				case "LOGOUT":
+				{
+					logOut();
+					break;
+				}
+				default:
+				{
+					System.out.println("Invalid request Command: " + command);
+					break;
+				}
+				}
 			}
 			
 		} catch (IOException e) {
