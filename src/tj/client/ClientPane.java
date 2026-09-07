@@ -114,19 +114,20 @@ public class ClientPane extends GridPane{
 			String id =fileIDToDownload.getText();
 			responseArea.appendText("Downloading document with ID " + id + "...\n");
 			new Thread(() -> {
-				File docFile = ClientHandler.getFileStatic(id);
+				File docFile = cHandler.getFile(id);
 				if (docFile != null) {
 					String docName = docFile.getName();
 					Platform.runLater(() -> {
 						responseArea.appendText(docName + " downloaded\n");
+						btnDownLoad.setDisable(false);
 					});
 				}else {
 					Platform.runLater(() -> {
 						responseArea.appendText("No document with ID " + id + "\n");
+						btnDownLoad.setDisable(false);
 					});
 				}
 			}).start();
-			btnDownLoad.setDisable(false);
 		});
 		
 		btnDisplay.setOnAction(e -> {
@@ -266,12 +267,12 @@ public class ClientPane extends GridPane{
 		int id;
 		do {
 			id = rand.nextInt(10000000);
-		}while(idExisits(id));
+		}while(idExists(id));
 		return id;
 	}
 	
 	//utility function to check if id exist
-	private boolean idExisits(int id) {
+	private boolean idExists(int id) {
 		if(ids.contains(id)) {
 			return true;
 		}else {
