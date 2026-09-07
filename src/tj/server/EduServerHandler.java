@@ -57,6 +57,8 @@ public class EduServerHandler implements Runnable{
 				StringTokenizer tokens = new StringTokenizer(requestLine);
 				//extract the request command
 				String command = tokens.nextToken();
+				//consume the blabk line
+				br.readLine();
 				
 				switch (command){
 				case "LOGIN":
@@ -88,14 +90,13 @@ public class EduServerHandler implements Runnable{
 					String id = tokens.nextToken();
 					String fileName = idToFileNmae(id);
 					if(fileName != null) {
-						pw.println(fileName);
+						pw.println("SUCCESS" + " " + fileName);
+						pw.println();
 						sendFile(fileName);
-						//send success message
-						pw.println("SUCCESS");
-						
 					}else {
 						System.out.println("Invalid ID: no document with ID " + id);
-						pw.println("INVALID_ID");
+						pw.println("ERR INVALID_ID");
+						pw.println();
 					}
 					break;
 				}
@@ -114,7 +115,7 @@ public class EduServerHandler implements Runnable{
 				case "LOGOUT":
 				{
 					logOut();
-					break;
+					return;
 				}
 				default:
 				{
