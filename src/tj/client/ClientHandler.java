@@ -53,6 +53,7 @@ public class ClientHandler{
 		
 		try {
 			pw.println("LOGIN" + " " + studentNum + " " + passWd);
+			pw.println();
 			String response = br.readLine();
 			return response;
 		} catch (IOException e) {
@@ -68,6 +69,7 @@ public class ClientHandler{
 	private String pull() {
 		String list = "";
 		pw.println("LIST");
+		pw.println();
 		try {
 			String line;
 			while((line = br.readLine()) != null && !line.equals("END")) {
@@ -96,57 +98,61 @@ public class ClientHandler{
 		}
 	}
 	
-	private File get(String ID) {
+	/**
+	 * Method to download file from the server
+	 * @param ID file ID to be downloaded
+	 * @return requested file from the serer
+	 */
+	public File getFile(String ID) {
 		pw.println("GET" + " " + ID);
-		String fileName;
+		pw.println();
+		File file = null;
+		
 		try {
-			fileName = br.readLine();
-			if(fileName.equals("INVALID_ID")) {
-				return null;
+			String response = br.readLine();
+			br.readLine();//consume the blank line
+			String[] parts = response.split("\\s");
+			if (parts[0].equals("ERR")) {
+				System.out.println(parts[1]);
+			}else if (parts[0].equals("SUCCESS")) {
+				String fileName = parts[1];
+				//read file size
+				long fileSize = dis.readLong();
+				//prepare for the file
+				File outputFile = new File("data/client/" + fileName);
+				FileOutputStream fos = new FileOutputStream(outputFile);
+				byte[] buffer = new byte[4096];
+				int bytesRead = 0;
+				long totalBytesRead = 0;
+				while (totalBytesRead < fileSize) {
+					bytesRead = dis.read(buffer);
+					if(bytesRead < 0) break; //end of stream
+					fos.write(buffer,0,bytesRead);
+					totalBytesRead += bytesRead;
+				}
+				fos.close(); 
+				file = outputFile;
 			}
-			//read file size
-			long fileSize = dis.readLong();
-			//prepare for the file
-			File outputFile = new File("data/client/" + fileName);
-			FileOutputStream fos = new FileOutputStream(outputFile);
-			byte[] buffer = new byte[4096];
-			int bytesRead = 0;
-			long totalBytesRead = 0;
-			while (totalBytesRead < fileSize) {
-				bytesRead = dis.read(buffer);
-				if(bytesRead < 0) break; //end of stream
-				fos.write(buffer,0,bytesRead);
-				totalBytesRead += bytesRead;
-			}
-			fos.close();
-			return outputFile;
+			
 		}catch (IOException e) {
 			e.printStackTrace();
-			return null;
 		}
+		return file;
 	}
+	
 	
 	/**
-	 * Method to download the requested document by creating a new connection to avoid corrupting stream
-	 * @param id document ID to be downloaded
-	 * @return document matching the provided id
+	 * Method to upload a file to the server
+	 * @param id file ID
+	 * @param fileName file Name
+	 * @param fileSize file Size
+	 * @param file the actual file
+	 * @return SCCESS if te file uploaded successfully or Failure otherwise
 	 */
-	public static File getFileStatic(String id) {
-		try(Socket s = new Socket("localhost",3030)){
-			ClientHandler tempHandler = new ClientHandler(s);
-			return tempHandler.get(id);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	private String uploadFile(int id,String fileName, long fileSize,File file) {
 		try{
 			pw.println("UPLOAD" + " " + id + " " + fileName + " " + fileSize);
+			pw.println();
 			dos.writeLong(fileSize);
 			dos.flush();
 			FileInputStream fis = new FileInputStream(file);
@@ -211,6 +217,7 @@ public class ClientHandler{
 	 */
 	public void logout() {
 		pw.println("LOGOUT");
+		pw.println();
 		close();
 	}
 	
