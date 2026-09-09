@@ -71,7 +71,7 @@ public class EduServerHandler implements Runnable{
 						pw.println("INVALID_CREDENTIALS");
 						return;
 					}else {
-						System.out.println("Login succeful");
+						System.out.println("Successfully loged in");
 						pw.println("SUCCESSFULLY_LOGED_IN");
 					}
 					break;
@@ -107,7 +107,14 @@ public class EduServerHandler implements Runnable{
 					String fileName = tokens.nextToken();
 					long fileSize = Long.parseLong(tokens.nextToken());
 					//receive file 
-					receiveFile(fileName);
+					boolean received = receiveFile(fileName);
+					if (received) {
+						pw.println("SUCCESS");
+						pw.println();
+					}else {
+						pw.println("FAULURE");
+						pw.println();
+					}
 					//update the document list
 					updateDocFile(id,fileName);
 					break;
@@ -231,7 +238,8 @@ public class EduServerHandler implements Runnable{
 	}
 	
 	//utility function to receive file from client
-	private void receiveFile(String fileName) {
+	private boolean receiveFile(String fileName) {
+		boolean recieved = false;
 		//prepare for file to be received
 		File outputFile = new File("data/server/" + fileName);
 		byte[] buffer = new byte[4096];
@@ -249,11 +257,11 @@ public class EduServerHandler implements Runnable{
 				totalBytesRead += bytesRead;
 			}
 			fos.close();
-			pw.println("SUCCESS");
+			recieved = true;
 		} catch (IOException e) {
-			pw.println("FAILURE");
 			e.printStackTrace();
 		}
+		return recieved;
 	}
 	
 	//utility function to update document list
