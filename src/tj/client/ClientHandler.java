@@ -149,7 +149,8 @@ public class ClientHandler{
 	 * @param file the actual file
 	 * @return SCCESS if te file uploaded successfully or Failure otherwise
 	 */
-	private String uploadFile(int id,String fileName, long fileSize,File file) {
+	public String uploadFile(int id,String fileName, long fileSize,File file) {
+		String response = "FAILURE";
 		try{
 			pw.println("UPLOAD" + " " + id + " " + fileName + " " + fileSize);
 			pw.println();
@@ -163,14 +164,15 @@ public class ClientHandler{
 				dos.flush();
 			}
 			fis.close();
-			return "SUCCESS";
+			response = br.readLine();
+			br.readLine();//consume the blank line
+			return response;
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-			return "FAILURE";
 		} catch (IOException e) {
 			e.printStackTrace();
-			return "FAILURE";
 		}
+		return response;
 	}
 	
 	/**
@@ -181,7 +183,7 @@ public class ClientHandler{
 	 * @param file the actual file to be uploaded
 	 * @return SUCCESS if the file is uploaded successfully FAILURE otherwise
 	 */
-	public static String uploadStatic(int id,String fileName, long fileSize,File file) {
+	private static String uploadStatic(int id,String fileName, long fileSize,File file) {
 		try (Socket s = new Socket("localhost",3030)){
 			ClientHandler tempHandler = new ClientHandler(s);
 			return tempHandler.uploadFile(id, fileName, fileSize, file);
@@ -209,7 +211,6 @@ public class ClientHandler{
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
-		 
 	}
 	
 	/**
