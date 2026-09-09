@@ -164,7 +164,7 @@ public class ClientPane extends GridPane{
 			new Thread(() -> {
 				if (selectedFile != null) {
 					//send the file
-					String response = ClientHandler.uploadStatic(id, fileName, fileSize, selectedFile);
+					String response = cHandler.uploadFile(id, fileName, fileSize, selectedFile);
 					Platform.runLater(() -> {
 						responseArea.appendText(response + '\n');
 						btnUppload.setDisable(false);
@@ -262,7 +262,7 @@ public class ClientPane extends GridPane{
 	}
 	
 	//utility function to generate random id
-	private int generateID() {
+	private int generateID() { 
 		Random rand = new Random();
 		int id;
 		do {
