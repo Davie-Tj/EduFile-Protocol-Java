@@ -5,3 +5,4 @@
 68677 horizon.png
 21594 lunar.png
 4827318 bootprint.png
+9553874 horizon.png

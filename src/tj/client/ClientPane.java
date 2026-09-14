@@ -180,8 +180,13 @@ public class ClientPane extends GridPane{
 			logout();
 			responseArea.appendText("You logged out\n");
 		});
+		
+		stage.setOnCloseRequest(e -> {
+			logout();
+		});
 	}
 	
+	//utility function to render the user interfaceS
 	private void setUI() {
 		this.setHgap(20);
 		this.setVgap(10);
@@ -279,6 +284,12 @@ public class ClientPane extends GridPane{
 			return false;
 		}
 	}
+	
+	/**
+	 * Method to log the user out
+	 * Disable buttons to prevent the client from trying to communicate over closed connections
+	 * close all connections on the client side
+	 */
 	public void logout() {
 		if (cHandler != null && cSocket.isConnected()) {
 			cHandler.logout();
